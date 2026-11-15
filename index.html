@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Pokyn pro neindexování ve vyhledávačích podle zadání -->
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <title>Martin Kubát - Osobní Kosmické Portfolio</title>
+  
+  <!-- Google Fonts: Space Grotesk & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS & Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-heading: 'Space Grotesk', sans-serif;
+      
+      /* Kosmické téma: Výchozí (Deep Nebula Blue / Purple) */
+      --bg-space: #070913;
+      --nebula-1: rgba(124, 58, 237, 0.25);
+      --nebula-2: rgba(37, 99, 235, 0.25);
+      --nebula-3: rgba(6, 182, 212, 0.20);
+      --accent-glow: #38bdf8;
+      --accent-secondary: #c084fc;
+      
+      /* Sklo (Glassmorphism 3D) parametry */
+      --glass-bg: rgba(14, 20, 42, 0.62);
+      --glass-bg-hover: rgba(20, 29, 58, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --glass-border-hover: rgba(56, 189, 248, 0.5);
+      --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(56, 189, 248, 0.1);
+      --glass-highlight: rgba(255, 255, 255, 0.28);
+      
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    /* Barevná kosmická schémata */
+    body[data-nebula="aurora"] {
+      --nebula-1: rgba(16, 185, 129, 0.25);
+      --nebula-2: rgba(6, 182, 212, 0.26);
+      --nebula-3: rgba(59, 130, 246, 0.20);
+      --accent-glow: #34d399;
+      --accent-secondary: #38bdf8;
+      --glass-border-hover: rgba(52, 211, 153, 0.5);
+      --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(52, 211, 153, 0.12);
+    }
+
+    body[data-nebula="supernova"] {
+      --nebula-1: rgba(244, 63, 94, 0.25);
+      --nebula-2: rgba(249, 115, 22, 0.25);
+      --nebula-3: rgba(168, 85, 247, 0.22);
+      --accent-glow: #fb923c;
+      --accent-secondary: #f43f5e;
+      --glass-border-hover: rgba(251, 146, 60, 0.5);
+      --glass-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(251, 146, 60, 0.12);
+    }
+
+    body.dark-mode {
+      /* Zachování třídy pro zpětnou kompatibilitu */
+      --bg-space: #030408;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--bg-space);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+      margin: 0;
+      padding: 0;
+      line-height: 1.65;
+    }
+
+    /* Plátno s vesmírem (Hvězdy, meteory, warp pruhy) */
+    #space-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Gradientové mlhoviny na pozadí */
+    .nebula-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      background: 
+        radial-gradient(circle at 18% 25%, var(--nebula-1) 0%, transparent 48%),
+        radial-gradient(circle at 82% 70%, var(--nebula-2) 0%, transparent 52%),
+        radial-gradient(circle at 50% 50%, var(--nebula-3) 0%, transparent 60%);
+      transition: background 1s ease;
+      filter: blur(40px);
+    }
+
+    /* Mřížka hloubky pro 3D prostorový vjem */
+    .cosmic-grid {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
+      background-size: 64px 64px;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+
+    /* Typografie a nadpisy */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      letter-spacing: -0.02em;
+    }
+
+    .cosmic-title-gradient {
+      background: linear-gradient(135deg, #ffffff 15%, var(--accent-glow) 60%, var(--accent-secondary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+      filter: drop-shadow(0 0 16px rgba(56, 189, 248, 0.35));
+    }
+
+    /* 3D SKLENĚNÉ TABULKY (Glassmorphism 3D Cards) */
+    .glass-card-wrapper {
+      perspective: 1000px;
+      height: 100%;
+    }
+
+    .glass-card-wrapper:hover {
+      animation-play-state: paused;
+    }
+
+    .glass-card {
+      position: relative;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px) saturate(190%);
+      -webkit-backdrop-filter: blur(20px) saturate(190%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 
+        var(--glass-shadow),
+        inset 0 1px 1px 0 var(--glass-highlight),
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.5);
+      padding: 2.2rem;
+      transition: box-shadow 0.3s ease, 
+                  border-color 0.3s ease,
+                  background 0.3s ease;
+      overflow: hidden;
+      pointer-events: auto;
+    }
+
+    .glass-card:hover {
+      background: var(--glass-bg-hover);
+      border-color: var(--glass-border-hover);
+      box-shadow: 
+        0 25px 60px -10px rgba(0, 0, 0, 0.8),
+        0 0 35px 2px rgba(56, 189, 248, 0.25),
+        inset 0 1px 2px 0 rgba(255, 255, 255, 0.4);
+    }
+
+    /* Plovoucí nulová gravitace (Zero-G floating) */
+    .float-slow {
+      animation: zeroGravity 7.5s ease-in-out infinite alternate;
+    }
+    .float-alt {
+      animation: zeroGravityAlt 9s ease-in-out infinite alternate;
+    }
+
+    @keyframes zeroGravity {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-7px); }
+    }
+
+    @keyframes zeroGravityAlt {
+      0% { transform: translateY(0px); }
+      100% { transform: translateY(-9px); }
+    }
+
+    /* Dynamický skleněný odlesk (Glare effect) */
+    .glass-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none !important;
+      border-radius: inherit;
+      background: radial-gradient(circle 320px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.15), transparent 75%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .glass-card:hover .glass-glare {
+      opacity: 1;
+    }
+
+    /* Vrstvy obsahu a zaručená klikatelnost všech prvků */
+    .depth-base {
+      position: relative;
+      z-index: 2;
+    }
+
+    .depth-layer-1,
+    .depth-layer-2,
+    .depth-layer-3 {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Všechny interaktivní prvky jsou vždy bezpečně klikatelné */
+    a, button, .btn, .badge-glass-skill {
+      position: relative;
+      z-index: 100 !important;
+      pointer-events: auto !important;
+      cursor: pointer;
+    }
+
+    /* HORNÍ KOSMICKÁ LIŠTA */
+    .cosmic-navbar {
+      background: rgba(8, 12, 26, 0.72);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 0.8rem 0;
+    }
+
+    /* HERO SEKCIE */
+    .hero-container {
+      padding: 4.5rem 0 3.5rem;
+      position: relative;
+    }
+
+    .avatar-orbit {
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(192, 132, 252, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.35);
+    }
+
+    .avatar-orbit::before {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 1.5px dashed rgba(56, 189, 248, 0.5);
+      animation: spinOrbit 22s linear infinite;
+    }
+
+    @keyframes spinOrbit {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .avatar-icon {
+      font-size: 3rem;
+      background: linear-gradient(135deg, #fff, var(--accent-glow));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.5));
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(16, 185, 129, 0.16);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+      padding: 0.4rem 0.95rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    }
+
+    .badge-glass-tag {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(56, 189, 248, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      color: #7dd3fc;
+      padding: 0.45rem 1rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      background-color: #10b981;
+      border-radius: 2px;
+      box-shadow: 0 0 10px #10b981;
+      animation: pulseAnim 2s infinite;
+    }
+
+    @keyframes pulseAnim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.35); }
+    }
+
+    .motto-glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      padding: 1rem 1.8rem;
+      display: inline-block;
+      max-width: 640px;
+      font-style: italic;
+      color: #e2e8f0;
+      box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.18), 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    /* KOSMICKÉ SKILL BADGES (Hranaté a poloprůhledné) */
+    .badge-glass-skill {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: #f1f5f9;
+      padding: 0.55rem 1.05rem;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      cursor: default;
+    }
+
+    .badge-glass-skill:hover {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: rgba(56, 189, 248, 0.65);
+      color: #ffffff;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+    }
+
+    /* SEZNAMY / ODRÁŽKY */
+    .glass-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .glass-list li {
+      padding: 0.65rem 0;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #cbd5e1;
+    }
+
+    .glass-list li i {
+      color: var(--accent-glow);
+      font-size: 1.2rem;
+      filter: drop-shadow(0 0 6px var(--accent-glow));
+    }
+
+    /* PROJEKT KARTA A KOSMICKÉ BLOKY */
+    .project-feature-card {
+      background: rgba(13, 20, 38, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      border-radius: 8px;
+      padding: 1.5rem 1.2rem;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
+    .project-feature-card:hover {
+      background: rgba(18, 28, 54, 0.88);
+      border-color: rgba(56, 189, 248, 0.65);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    }
+
+    .project-feature-icon {
+      width: 52px;
+      height: 52px;
+      margin-bottom: 0.85rem;
+      border-radius: 6px;
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-glow);
+      font-size: 1.65rem;
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.45));
+    }
+
+    .project-feature-title {
+      color: #ffffff;
+      font-weight: 700;
+      font-size: 1.05rem;
+      margin-bottom: 0.45rem;
+      font-family: var(--font-heading);
+      letter-spacing: -0.01em;
+    }
+
+    .project-feature-badge {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+      background: rgba(56, 189, 248, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #7dd3fc;
+    }
+
+    .project-feature-desc {
+      color: #e2e8f0;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      margin-bottom: 0;
+    }
+
+    /* BUDOUCNOST - TRAJEKTORIE */
+    .path-card {
+      background: rgba(13, 20, 38, 0.72);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 8px;
+      padding: 1.4rem;
+      height: 100%;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+    }
+
+    .path-card:hover {
+      background: rgba(18, 28, 54, 0.88);
+      border-color: rgba(56, 189, 248, 0.45);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(56, 189, 248, 0.2);
+    }
+
+    .btn-cosmic {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.75), rgba(124, 58, 237, 0.75));
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      padding: 0.75rem 1.75rem;
+      border-radius: 6px;
+      font-weight: 600;
+      font-family: var(--font-heading);
+      letter-spacing: 0.02em;
+      transition: all 0.25s ease;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .btn-cosmic:hover {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.95), rgba(124, 58, 237, 0.95));
+      color: #ffffff;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 0 35px rgba(56, 189, 248, 0.6);
+    }
+
+    .btn-cosmic:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-cosmic-outline {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #f1f5f9;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      padding: 0.55rem 1.25rem;
+      border-radius: 6px;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .btn-cosmic-outline:hover {
+      background: rgba(56, 189, 248, 0.18);
+      color: #ffffff;
+      border-color: var(--accent-glow);
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    }
+
+    /* Plovoucí toast notifikace při zkopírování e-mailu */
+    #copyToast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--accent-glow);
+      box-shadow: 0 0 30px rgba(56, 189, 248, 0.45);
+      color: #fff;
+      padding: 0.8rem 1.6rem;
+      border-radius: 6px;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #copyToast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(6, 9, 19, 0.88);
+      backdrop-filter: blur(14px);
+      margin-top: 5rem;
+      padding: 2.5rem 0;
+    }
+
+    /* Responzivní optimalizace */
+    @media (max-width: 768px) {
+      .glass-card {
+        padding: 1.6rem;
+      }
+      .hero-container {
+        padding: 2.5rem 0 2rem;
+      }
+      .display-4 {
+        font-size: 2.25rem;
+      }
+    }
+  </style>
+</head>
+<body data-nebula="default">
+
+  <!-- Interaktivní plátno s vesmírem a hvězdami -->
+  <canvas id="space-canvas"></canvas>
+
+  <!-- Kosmická mlhovina a mřížka hloubky -->
+  <div class="nebula-overlay"></div>
+  <div class="cosmic-grid"></div>
+
+  <!-- Horní lišta s ovládáním atmosféry -->
+  <nav class="cosmic-navbar">
+    <div class="container d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-stars text-info fs-5"></i>
+        <span class="fw-bold tracking-wide small text-uppercase text-light">MK &bull; Kosmická Stanice</span>
+      </div>
+      
+      <div class="d-flex align-items-center gap-2">
+        <!-- Zpětně kompatibilní tlačítko přepnutí režimu -->
+        <button id="themeToggle" class="btn btn-cosmic-outline btn-sm" title="Přepnout kosmický / temný režim">
+          <i class="bi bi-moon-stars"></i> <span class="d-none d-md-inline">Režim</span> 🌙
+        </button>
+
+        <!-- Výběr mlhoviny -->
+        <div class="dropdown">
+          <button class="btn btn-cosmic-outline btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-palette2"></i> <span class="d-none d-sm-inline">Mlhovina</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg" style="background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.18); border-radius: 6px;">
+            <li><button class="dropdown-item" onclick="setNebulaTheme('default')">🌌 Hluboký kosmos (Modrá / Fialová)</button></li>
+            <li><button class="dropdown-item" onclick="setNebulaTheme('aurora')">✨ Polární záře (Smaragdová / Azurová)</button></li>
+            <li><button class="dropdown-item" onclick="setNebulaTheme('supernova')">💥 Supernova (Oranžová / Růžová)</button></li>
+          </ul>
+        </div>
+
+        <!-- Warp pohon -->
+        <button id="warpBtn" class="btn btn-cosmic-outline btn-sm" title="Zrychlit pohyb hvězd do hyperprostoru">
+          <i class="bi bi-speedometer2"></i> <span class="d-none d-sm-inline">Warp</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Úvodní představení (Hero sekce) v 3D skleněné tabulce -->
+  <header class="hero-container text-center">
+    <div class="container">
+      <div class="glass-card-wrapper float-slow mx-auto" style="max-width: 920px;">
+        <div class="glass-card" data-tilt>
+          <div class="glass-glare"></div>
+          
+          <div class="depth-base">
+            <!-- Kosmický orbitální avatar (standardní profilový zástupce: hlava a ramena) -->
+            <div class="depth-layer-2 avatar-orbit">
+              <i class="bi bi-person-fill avatar-icon"></i>
+            </div>
+
+            <!-- Jméno a titul s 3D hloubkou -->
+            <div class="depth-layer-3">
+              <h1 class="display-4 fw-bold cosmic-title-gradient mb-2">Martin Kubát</h1>
+              <p class="fs-5 text-light opacity-90 mb-2">Student SPŠ, SOŠ a SOU Hradební</p>
+              
+              <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 my-3">
+                <span class="badge-glass-tag">
+                  <i class="bi bi-cpu me-1"></i> Obor: Elektrotechnika – Automatizace
+                </span>
+                <span class="status-badge">
+                  <span class="pulse-dot"></span> Bydliště &bull; Hradec Králové
+                </span>
+              </div>
+            </div>
+
+            <!-- Motto -->
+            <div class="depth-layer-1 mt-4">
+              <div class="motto-glass">
+                <i class="bi bi-quote text-info fs-5 me-1"></i>
+                „Stres zabíjí, tak nač se stresovat z věcí, které neovlivním.“
+              </div>
+            </div>
+
+            <!-- Rychlá tlačítka -->
+            <div class="depth-layer-2 mt-4 d-flex justify-content-center gap-3 flex-wrap">
+              <a href="#projekty" class="btn btn-cosmic">
+                <i class="bi bi-rocket-takeoff-fill"></i> Moje projekty
+              </a>
+              <a href="#kontakt" class="btn btn-cosmic-outline">
+                <i class="bi bi-envelope"></i> Kontaktovat
+              </a>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-5">
+    
+    <!-- O MNĚ A ZÁJMY (Dvě 3D skleněné tabulky vedle sebe) -->
+    <section class="mb-5">
+      <div class="row g-4">
+        
+        <!-- O mně a Úspěchy -->
+        <div class="col-lg-6">
+          <div class="glass-card-wrapper float-slow">
+            <div class="glass-card h-100" data-tilt>
+              <div class="glass-glare"></div>
+              <div class="depth-base">
+                <div class="depth-layer-2 d-flex align-items-center gap-3 mb-3">
+                  <div class="p-2 rounded-1 bg-primary bg-opacity-25 border border-primary text-info fs-4" style="backdrop-filter: blur(8px);">
+                    <i class="bi bi-person-badge-fill"></i>
+                  </div>
+                  <h2 class="h3 cosmic-title-gradient mb-0">O mně</h2>
+                </div>
+
+                <div class="depth-layer-1">
+                  <p class="text-light opacity-90 fs-6">
+                    Jsem studentem elektrotechniky se zaměřením na automatizaci. Baví mě propojení manuální zručnosti s technikou, tvorbou modelů a moderními technologiemi.
+                  </p>
+
+                  <h3 class="h6 text-uppercase fw-bold text-info tracking-wider mt-4 mb-3">
+                    <i class="bi bi-award-fill me-1"></i> Na co jsem hrdý:
+                  </h3>
+                  
+                  <ul class="glass-list">
+                    <li>
+                      <i class="bi bi-check-circle-fill"></i>
+                      <span>Svoje propracované modely z kartonu.</span>
+                    </li>
+                    <li>
+                      <i class="bi bi-check-circle-fill"></i>
+                      <span>Udržování relativně dobrých známek ve škole.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zájmy a Schopnosti -->
+        <div class="col-lg-6">
+          <div class="glass-card-wrapper float-alt">
+            <div class="glass-card h-100" data-tilt>
+              <div class="glass-glare"></div>
+              <div class="depth-base">
+                <div class="depth-layer-2 d-flex align-items-center gap-3 mb-3">
+                  <div class="p-2 rounded-1 bg-info bg-opacity-25 border border-info text-info fs-4" style="backdrop-filter: blur(8px);">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                  </div>
+                  <h2 class="h3 cosmic-title-gradient mb-0">Zájmy a dovednosti</h2>
+                </div>
+
+                <div class="depth-layer-1">
+                  <p class="text-light opacity-80 small mb-3">
+                    Ve volném čase kombinuji kreativní tvorbu modelů s aktivním odpočinkem a technikou.
+                  </p>
+
+                  <div class="d-flex flex-wrap gap-2 my-3">
+                    <span class="badge-glass-skill">🖨️ 3D tisk</span>
+                    <span class="badge-glass-skill">✂️ Lepení papírových modelů</span>
+                    <span class="badge-glass-skill">🚴 Jízda na kole</span>
+                    <span class="badge-glass-skill">🎮 Hraní PC her</span>
+                    <span class="badge-glass-skill">🚗 Řízení auta</span>
+                  </div>
+
+                  <div class="mt-4 p-3" style="border-radius: 6px; background: rgba(13, 20, 38, 0.72); backdrop-filter: blur(10px); border: 1px solid rgba(56, 189, 248, 0.28); box-shadow: 0 4px 18px rgba(0,0,0,0.4);">
+                    <div class="d-flex align-items-center gap-2 text-info small fw-bold mb-1">
+                      <i class="bi bi-info-circle-fill"></i> Všestranné zaměření
+                    </div>
+                    <span class="small" style="color: #cbd5e1; line-height: 1.5; display: block;">Propojuji technické myšlení z automatizace s trpělivostí u jemné modelářské mechaniky.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- PROJEKTY (Velká 3D skleněná tabulka) -->
+    <section id="projekty" class="mb-5">
+      <div class="glass-card-wrapper float-alt">
+        <div class="glass-card" data-tilt>
+          <div class="glass-glare"></div>
+          <div class="depth-base">
+            
+            <div class="depth-layer-2 d-flex align-items-center gap-3 mb-3">
+              <div class="p-2 rounded-1 bg-primary bg-opacity-25 border border-primary text-info fs-4" style="backdrop-filter: blur(8px);">
+                <i class="bi bi-folder-check"></i>
+              </div>
+              <h2 class="h3 cosmic-title-gradient mb-0">3D tištěný kryt na tónový generátor</h2>
+            </div>
+
+            <div class="depth-layer-1 mt-3">
+              <p class="fs-6 text-light opacity-90">
+                Projekt tónového generátoru pájeného v rámci školních praxí. Navrhnul a vytisknul jsem pro něj vlastní ochranný 3D kryt ve stylu piana.
+              </p>
+
+              <div class="row g-3 mt-3">
+                <!-- Blok 1: Ruční pájení obvodu -->
+                <div class="col-md-4">
+                  <div class="project-feature-card">
+                    <div class="project-feature-icon">
+                      <i class="bi bi-cpu"></i>
+                    </div>
+                    <h3 class="project-feature-title">Ruční pájení obvodu</h3>
+                    <p class="project-feature-desc">
+                      Návrh obvodu vypracoval učitel. Mojí prací bylo kompletní osazení desky a precizní ruční zapájení všech elektronických součástek.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Blok 2: 3D Modelování krytu -->
+                <div class="col-md-4">
+                  <div class="project-feature-card">
+                    <div class="project-feature-icon">
+                      <i class="bi bi-box-seam"></i>
+                    </div>
+                    <h3 class="project-feature-title">3D Modelování krytu</h3>
+                    <p class="project-feature-desc">
+                      Vlastní autorský CAD design ochranného pouzdra inspirovaného pianem, přizpůsobený přesně na míru rozměrům desky a ovládání.
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Blok 3: FDM 3D Tisk -->
+                <div class="col-md-4">
+                  <div class="project-feature-card">
+                    <div class="project-feature-icon">
+                      <i class="bi bi-printer"></i>
+                    </div>
+                    <h3 class="project-feature-title">Výroba na 3D tiskárně</h3>
+                    <p class="project-feature-desc">
+                      Kompletní příprava tiskových profilů (slicing) a úspěšný tisk odolného finálního krytu na školní 3D tiskárně.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BUDOUCNOST (3D skleněná tabulka s trajektorií) -->
+    <section class="mb-5">
+      <div class="glass-card-wrapper float-slow">
+        <div class="glass-card" data-tilt>
+          <div class="glass-glare"></div>
+          <div class="depth-base">
+            <div class="depth-layer-2 d-flex align-items-center gap-3 mb-4">
+              <div class="p-2 rounded-1 bg-info bg-opacity-25 border border-info text-info fs-4" style="backdrop-filter: blur(8px);">
+                <i class="bi bi-compass"></i>
+              </div>
+              <h2 class="h3 cosmic-title-gradient mb-0">Moje budoucnost & Trajektorie</h2>
+            </div>
+
+            <div class="depth-layer-1">
+              <p class="text-light opacity-90 fs-6 mb-4">
+                Mám jasnou představu o svých dalších krocích po dokončení střední školy:
+              </p>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <div class="path-card">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-info">
+                      <i class="bi bi-mortarboard-fill fs-5"></i>
+                      <strong class="fs-6">Plán A: Vysoká škola</strong>
+                    </div>
+                    <p class="small text-light opacity-80 mb-0">
+                      Do budoucna bych chtěl zkusit studium na <strong>vysoké škole</strong> se zaměřením na elektrotechniku, automatizaci či mechatroniku.
+                    </p>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="path-card">
+                    <div class="d-flex align-items-center gap-2 mb-2 text-warning">
+                      <i class="bi bi-briefcase-fill fs-5"></i>
+                      <strong class="fs-6">Plán B: Přímý nástup do praxe</strong>
+                    </div>
+                    <p class="small text-light opacity-80 mb-0">
+                      V případě, že by to nevyšlo, plánuji jít přímo do praxe a pracovat v oboru elektrotechniky, servisu a automatizace.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KONTAKT (3D skleněná tabulka) -->
+    <section id="kontakt" class="mb-5 text-center">
+      <div class="glass-card-wrapper float-slow mx-auto" style="max-width: 680px;">
+        <div class="glass-card" data-tilt>
+          <div class="glass-glare"></div>
+          <div class="depth-base">
+            <div class="depth-layer-2 mb-3">
+              <div class="avatar-orbit mx-auto mb-3" style="width: 70px; height: 70px;">
+                <i class="bi bi-send-fill text-info fs-3"></i>
+              </div>
+              <h2 class="h3 cosmic-title-gradient">Kontakt</h2>
+              <p class="text-light opacity-90">Máš dotaz, nápad nebo zájem o spolupráci? Napiš mi na:</p>
+            </div>
+
+            <div class="depth-layer-3 d-flex flex-column flex-sm-row justify-content-center align-items-center gap-3 mt-4">
+              <a href="mailto:martinkubat07@gmail.com" class="btn btn-cosmic">
+                <i class="bi bi-envelope-at-fill"></i> martinkubat07@gmail.com
+              </a>
+              <button id="copyEmailBtn" class="btn btn-cosmic-outline" title="Zkopírovat e-mail do schránky">
+                <i class="bi bi-clipboard"></i> Zkopírovat e-mail
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Plovoucí oznámení (Toast) -->
+  <div id="copyToast">
+    <i class="bi bi-check-circle-fill text-info me-2"></i> E-mail byl zkopírován do schránky!
+  </div>
+
+  <!-- Kosmická patička -->
+  <footer class="text-center">
+    <div class="container">
+      <p class="mb-1 text-light opacity-80">&copy; 2026 Martin Kubát &bull; Všechna práva vyhrazena</p>
+      <p class="small text-muted mb-0">SPŠ, SOŠ a SOU Hradební | Obor Elektrotechnika & Automatizace</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- 3D Skleněné efekty & Vesmírná simulace -->
+  <script>
+    /* ==========================================================
+       1. KOSMICKÝ ENGINE (CANVAS): Hvězdy, meteory a paralaxa
+       ========================================================== */
+    const canvas = document.getElementById('space-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let width = 0;
+    let height = 0;
+    let stars = [];
+    let meteors = [];
+    let mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
+    let warpSpeed = 1;
+    let isWarping = false;
+
+    // Přizpůsobení velikosti plátna
+    function resizeCanvas() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+      initStars();
+    }
+
+    // Inicializace hvězd ve 3 hloubkových vrstvách
+    function initStars() {
+      stars = [];
+      const starCount = Math.floor((width * height) / 3600); // Responzivní hustota
+
+      for (let i = 0; i < starCount; i++) {
+        const depth = Math.random(); // 0 (vzdálená) až 1 (blízká)
+        stars.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          size: depth < 0.75 ? (Math.random() * 1.2 + 0.4) : (Math.random() * 2.2 + 1.2),
+          depth: depth * 1.6 + 0.2, // Rychlost paralaxy podle hloubky
+          alpha: Math.random() * 0.7 + 0.3,
+          twinkleSpeed: Math.random() * 0.03 + 0.01,
+          color: getRandomStarColor()
+        });
+      }
+    }
+
+    function getRandomStarColor() {
+      const colors = [
+        '#ffffff', '#ffffff', '#ffffff',
+        '#93c5fd', '#bfdbfe', // Modré hvězdy
+        '#c4b5fd', '#e9d5ff', // Fialové hvězdy
+        '#fef08a'             // Zlatavé hvězdy
+      ];
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // Tvorba meteorů / padajících hvězd
+    function spawnMeteor() {
+      if (meteors.length >= 3) return;
+      
+      const startX = Math.random() * width;
+      const startY = Math.random() * (height * 0.35);
+      const angle = (Math.PI / 4) + (Math.random() * 0.3 - 0.15); // Směr šikmo dolů
+      const speed = Math.random() * 14 + 16;
+      const length = Math.random() * 85 + 75;
+
+      meteors.push({
+        x: startX,
+        y: startY,
+        dx: Math.cos(angle) * speed,
+        dy: Math.sin(angle) * speed,
+        length: length,
+        life: 1.0,
+        decay: Math.random() * 0.025 + 0.016,
+        color: Math.random() > 0.5 ? '#38bdf8' : '#e0e7ff'
+      });
+    }
+
+    // Hlavní vykreslovací smyčka vesmíru
+    function renderSpace() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Plynulá paralaxa myši (lerp)
+      mouse.x += (mouse.targetX - mouse.x) * 0.05;
+      mouse.y += (mouse.targetY - mouse.y) * 0.05;
+
+      const parallaxOffsetX = (mouse.x - width / 2) * 0.025;
+      const parallaxOffsetY = (mouse.y - height / 2) * 0.025;
+
+      // Kreslení hvězd
+      for (let star of stars) {
+        // Třpyt hvězd
+        star.alpha += Math.sin(Date.now() * star.twinkleSpeed) * 0.01;
+        const clampedAlpha = Math.max(0.15, Math.min(1, star.alpha));
+
+        // Pozice s paralaxou
+        let posX = star.x - parallaxOffsetX * star.depth;
+        let posY = star.y - parallaxOffsetY * star.depth;
+
+        // Warp efekt posun
+        if (isWarping) {
+          posY += star.depth * 18 * warpSpeed;
+          if (posY > height) {
+            star.y = -10;
+            star.x = Math.random() * width;
+          }
+        }
+
+        ctx.fillStyle = star.color;
+        ctx.globalAlpha = clampedAlpha;
+
+        // Vykreslení hvězdy
+        if (isWarping) {
+          // Světelná stopa při warpu
+          ctx.beginPath();
+          ctx.moveTo(posX, posY);
+          ctx.lineTo(posX, posY - star.size * 14);
+          ctx.strokeStyle = star.color;
+          ctx.lineWidth = star.size * 1.2;
+          ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(posX, posY, star.size, 0, Math.PI * 2);
+          ctx.fill();
+
+          // Křížový záblesk pro nejjasnější hvězdy
+          if (star.size > 2.2) {
+            ctx.strokeStyle = star.color;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(posX - 4, posY);
+            ctx.lineTo(posX + 4, posY);
+            ctx.moveTo(posX, posY - 4);
+            ctx.lineTo(posX, posY + 4);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Kreslení meteorů
+      for (let i = meteors.length - 1; i >= 0; i--) {
+        const m = meteors[i];
+        m.x += m.dx;
+        m.y += m.dy;
+        m.life -= m.decay;
+
+        if (m.life <= 0 || m.x < 0 || m.x > width || m.y > height) {
+          meteors.splice(i, 1);
+          continue;
+        }
+
+        const tailX = m.x - (m.dx / 15) * m.length;
+        const tailY = m.y - (m.dy / 15) * m.length;
+
+        const grad = ctx.createLinearGradient(m.x, m.y, tailX, tailY);
+        grad.addColorStop(0, `rgba(255, 255, 255, ${m.life})`);
+        grad.addColorStop(0.3, `rgba(56, 189, 248, ${m.life * 0.8})`);
+        grad.addColorStop(1, 'rgba(56, 189, 248, 0)');
+
+        ctx.beginPath();
+        ctx.moveTo(m.x, m.y);
+        ctx.lineTo(tailX, tailY);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+
+        // Hlava meteoru (zářící bod)
+        ctx.fillStyle = '#ffffff';
+        ctx.globalAlpha = m.life;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.globalAlpha = 1.0;
+      requestAnimationFrame(renderSpace);
+    }
+
+    // Interval pro meteory
+    setInterval(() => {
+      if (!isWarping && Math.random() > 0.3) {
+        spawnMeteor();
+      }
+    }, 2800);
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('mousemove', (e) => {
+      mouse.targetX = e.clientX;
+      mouse.targetY = e.clientY;
+    });
+
+    resizeCanvas();
+    renderSpace();
+
+
+    /* ==========================================================
+       2. 3D EFEKT SKLENĚNÝCH TABULEK (Stabilní plynulý 3D Tilt & Glare)
+       ========================================================== */
+    const cardWrappers = document.querySelectorAll('.glass-card-wrapper');
+
+    cardWrappers.forEach(wrapper => {
+      const card = wrapper.querySelector('.glass-card');
+      if (!card) return;
+
+      let rect = null;
+      let targetX = 0;
+      let targetY = 0;
+      let currentX = 0;
+      let currentY = 0;
+      let targetScale = 1;
+      let currentScale = 1;
+      let isHovered = false;
+      let rafId = null;
+
+      function updateTilt() {
+        // Plynulá fyzikální interpolace (damping lerp) pro 60/120 fps bez trhání
+        currentX += (targetX - currentX) * 0.15;
+        currentY += (targetY - currentY) * 0.15;
+        currentScale += (targetScale - currentScale) * 0.15;
+
+        card.style.transform = `rotateX(${currentX.toFixed(2)}deg) rotateY(${currentY.toFixed(2)}deg) scale3d(${currentScale.toFixed(3)}, ${currentScale.toFixed(3)}, ${currentScale.toFixed(3)})`;
+
+        // Pokračovat ve vykreslování POUZE pokud se pozice ještě mění
+        const delta = Math.abs(targetX - currentX) + Math.abs(targetY - currentY) + Math.abs(targetScale - currentScale);
+        if (delta > 0.005) {
+          rafId = requestAnimationFrame(updateTilt);
+        } else {
+          // Karta je v klidu - zastavit překreslování DOMu pro 100% spolehlivé klikání
+          currentX = targetX;
+          currentY = targetY;
+          currentScale = targetScale;
+          if (currentX === 0 && currentY === 0 && currentScale === 1) {
+            card.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+          } else {
+            card.style.transform = `rotateX(${currentX.toFixed(2)}deg) rotateY(${currentY.toFixed(2)}deg) scale3d(${currentScale.toFixed(3)}, ${currentScale.toFixed(3)}, ${currentScale.toFixed(3)})`;
+          }
+          rafId = null;
+        }
+      }
+
+      function ensureRAF() {
+        if (!rafId) {
+          rafId = requestAnimationFrame(updateTilt);
+        }
+      }
+
+      wrapper.addEventListener('mouseenter', () => {
+        isHovered = true;
+        targetScale = 1.01;
+        rect = wrapper.getBoundingClientRect();
+        ensureRAF();
+      });
+
+      wrapper.addEventListener('mousemove', (e) => {
+        if (!rect) rect = wrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Pozice pro dynamický světelný odlesk
+        card.style.setProperty('--mouse-x', `${x}px`);
+        card.style.setProperty('--mouse-y', `${y}px`);
+
+        // Výpočet cílového úhlu (jemný a decentní náklon o polovinu méně: max 4.5°)
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const maxTilt = 4.5; // Zmenšeno na polovinu pro příjemný a decentní efekt
+
+        targetX = -((y - centerY) / centerY) * maxTilt;
+        targetY = ((x - centerX) / centerX) * maxTilt;
+
+        ensureRAF();
+      });
+
+      wrapper.addEventListener('mouseleave', () => {
+        isHovered = false;
+        targetX = 0;
+        targetY = 0;
+        targetScale = 1;
+        rect = null;
+        ensureRAF();
+      });
+    });
+
+
+    /* ==========================================================
+       3. INTERAKTIVNÍ KOSMICKÉ FUNKCE:
+          - Počítadlo kliknutí s generováním pulzů, jiskrami a zvukem
+          - Přepínač tmavého režimu (kompatibilita)
+          - Změna kosmického schématu mlhoviny
+          - Tlačítko zrychlení Warp
+          - Kopírování e-mailu do schránky
+       ========================================================== */
+
+    // Web Audio Synthesizer pro sci-fi zvukové efekty (bez závislosti na externích audiosouborech)
+    let audioCtx = null;
+    function playSciFiChime(frequency = 440, type = 'sine') {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(frequency * 1.5, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.22);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.22);
+      } catch (err) {
+        // Tichý fallback
+      }
+    }
+
+    // Funkce 2: Zpětně kompatibilní přepínač tmavého / světlého / kosmického režimu
+    const themeBtn = document.getElementById('themeToggle');
+    const themesList = ['default', 'aurora', 'supernova'];
+    let currentThemeIdx = 0;
+
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      currentThemeIdx = (currentThemeIdx + 1) % themesList.length;
+      setNebulaTheme(themesList[currentThemeIdx]);
+    });
+
+    // Funkce 3: Změna mlhovinového schématu
+    function setNebulaTheme(themeName) {
+      document.body.setAttribute('data-nebula', themeName);
+      playSciFiChime(550, 'sine');
+    }
+
+    // Funkce 4: Warp režim (Hyperprostor)
+    const warpBtn = document.getElementById('warpBtn');
+    warpBtn.addEventListener('click', () => {
+      isWarping = !isWarping;
+      if (isWarping) {
+        warpBtn.classList.remove('btn-cosmic-outline');
+        warpBtn.classList.add('btn-cosmic');
+        warpBtn.innerHTML = '<i class="bi bi-speedometer2 text-warning"></i> Warp Aktivní!';
+        playSciFiChime(880, 'sawtooth');
+      } else {
+        warpBtn.classList.remove('btn-cosmic');
+        warpBtn.classList.add('btn-cosmic-outline');
+        warpBtn.innerHTML = '<i class="bi bi-speedometer2"></i> <span class="d-none d-sm-inline">Warp</span>';
+        playSciFiChime(330, 'sine');
+      }
+    });
+
+    // Funkce 5: Kopírování e-mailu s toast notifikací (podpora pro file://, http i https)
+    const copyEmailBtn = document.getElementById('copyEmailBtn');
+    const copyToast = document.getElementById('copyToast');
+
+    function notifyCopySuccess() {
+      playSciFiChime(660, 'sine');
+      copyToast.classList.add('show');
+      setTimeout(() => {
+        copyToast.classList.remove('show');
+      }, 2800);
+    }
+
+    function fallbackCopyText(text) {
+      try {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        ta.style.top = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        const success = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (success) {
+          notifyCopySuccess();
+        } else {
+          prompt('Zkopírujte si prosím e-mail (Ctrl+C):', text);
+        }
+      } catch (err) {
+        prompt('Zkopírujte si prosím e-mail (Ctrl+C):', text);
+      }
+    }
+
+    copyEmailBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const email = 'martinkubat07@gmail.com';
+
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(email)
+          .then(notifyCopySuccess)
+          .catch(() => fallbackCopyText(email));
+      } else {
+        fallbackCopyText(email);
+      }
+    });
+  </script>
+</body>
+</html>
